@@ -12,5 +12,5 @@
     ```
 * Now create the deployment manager using command
     ```
-    gcloud deployment-manager deployments create lampsatck --config=config.yaml
+    gcloud deployment-manager deployments create lampstack --config=config.yaml
     ```
