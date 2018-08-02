@@ -1,0 +1,28 @@
+{
+  "solution": {
+    "active": true,
+    "hidden": false,
+    "marketingInfo": {
+      "eulaUrl": "https://bitnami.com/agreement",
+      "priceDescription": {
+        "description": "The default configuration allows you to run a simple LAMP-based application."
+      },
+      "searchMetaDescription": "LAMP on Google Cloud",
+      "supportInfo": "Bitnami provides technical support for installation and setup issues through <a href=\"https://bitnami.com/support/google\">our support center</a>.",
+      "supportUrl": "https://bitnami.com/support/google",
+      "userFacetBindings": [
+        {
+          "facetId": "category",
+          "facetValueId": "developer-tools"
+        }
+      ]
+    },
+    "partnerId": "bitnami-launchpad",
+    "solutionId": "lampstack",
+    "solutionPublishedName": "bitnami-launchpad/lampstack",
+    "solutionType": "PACKAGED_DEPLOYMENT"
+  },
+  "solution_default_price": {
+    "use_dynamic_pricing": true
+  }
+}

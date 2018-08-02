@@ -1,0 +1,422 @@
+resources:
+- name: lampstack
+  outputs:
+  - finalValue: lampstack-1
+    name: deployment
+    value: lampstack-1
+  - finalValue: YT2PVi75cqXi
+    name: password0
+    value: $(ref.generated-password-0.password)
+  - finalValue: qwiklabs-gcp-3be47a22ae8b21dd
+    name: project
+    value: qwiklabs-gcp-3be47a22ae8b21dd
+  - finalValue: '5055242931306174474'
+    name: vmId
+    value: $(ref.lampstack-1-vm.id)
+  - finalValue: 35.192.162.122
+    name: vmExternalIP
+    value: $(ref.lampstack-vm-tmpl.ip)
+  - finalValue: 10.128.0.2
+    name: vmInternalIP
+    value: $(ref.lampstack-vm-tmpl.internalIP)
+  - finalValue: lampstack-1-vm
+    name: vmName
+    value: lampstack-1-vm
+  - finalValue: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-3be47a22ae8b21dd/zones/us-central1-a/instances/lampstack-1-vm
+    name: vmSelfLink
+    value: $(ref.lampstack-1-vm.selfLink)
+  properties:
+    bootDiskSizeGb: 10
+    bootDiskType: pd-standard
+    enableTcp80: true
+    enableTcp443: true
+    externalIP: Ephemeral
+    machineType: f1-micro
+    network: default
+    subnetwork: default
+    tcp80SourceRanges: ''
+    tcp443SourceRanges: ''
+    zone: us-central1-a
+  resources:
+  - name: lampstack-vm-tmpl
+    outputs:
+    - finalValue: 10.128.0.2
+      name: internalIP
+      value: $(ref.lampstack-1-vm.networkInterfaces[0].networkIP)
+    - finalValue: 35.192.162.122
+      name: ip
+      value: $(ref.lampstack-1-vm.networkInterfaces[0].accessConfigs[0].natIP)
+    properties:
+      bootDiskSizeGb: 10
+      bootDiskType: pd-standard
+      canIpForward: false
+      diskType: pd-standard
+      disks: []
+      hasExternalIP: true
+      instanceName: lampstack-1-vm
+      localSSDs: 0
+      machineType: f1-micro
+      metadata:
+        items:
+        - key: bitnami-base-password
+          value: $(ref.generated-password-0.password)
+        - key: status-config-url
+          value: $(ref.software-status.config-url)
+        - key: status-variable-path
+          value: $(ref.software-status.variable-path)
+        - key: status-uptime-deadline
+          value: 420
+        - key: startup-script
+          value: $(ref.software-status-script.startup-script)
+        - key: google-monitoring-enable
+          value: '0'
+        - key: google-logging-enable
+          value: '0'
+      network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-3be47a22ae8b21dd/global/networks/default
+      provideBoot: true
+      serviceAccounts:
+      - email: default
+        scopes:
+        - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+        - https://www.googleapis.com/auth/devstorage.read_only
+        - https://www.googleapis.com/auth/logging.write
+        - https://www.googleapis.com/auth/monitoring.write
+        - https://www.googleapis.com/auth/cloudruntimeconfig
+      sourceImage: https://www.googleapis.com/compute/v1/projects/bitnami-launchpad/global/images/bitnami-lampstack-7-1-20-0-linux-debian-9-x86-64
+      subnetwork: default
+      tags:
+        items:
+        - lampstack-1-tcp-80
+        - lampstack-1-tcp-443
+      zone: us-central1-a
+    resources:
+    - name: lampstack-1-vm
+      type: compute.v1.instance
+    type: vm_instance.py
+  - name: generated-password-0
+    outputs:
+    - finalValue: YT2PVi75cqXi
+      name: password
+      value: YT2PVi75cqXi
+    type: password.py
+  - name: software-status
+    outputs:
+    - finalValue: https://runtimeconfig.googleapis.com/v1beta1/projects/qwiklabs-gcp-3be47a22ae8b21dd/configs/lampstack-1-config
+      name: config-url
+      value: https://runtimeconfig.googleapis.com/v1beta1/projects/qwiklabs-gcp-3be47a22ae8b21dd/configs/lampstack-1-config
+    - finalValue: status
+      name: variable-path
+      value: status
+    properties:
+      timeout: 480
+      waiterDependsOn:
+      - lampstack-1-vm
+    resources:
+    - name: lampstack-1-config
+      type: runtimeconfig.v1beta1.config
+    - name: lampstack-1-software
+      type: runtimeconfig.v1beta1.waiter
+    type: software_status.py
+  - name: software-status-script
+    outputs:
+    - finalValue: |-
+        #!/bin/bash
+
+        set -e
+
+        DEFAULT_UPTIME_DEADLINE="300"  # 5 minutes
+
+        metadata_value() {
+          curl --retry 5 -sfH "Metadata-Flavor: Google" \
+               "http://metadata/computeMetadata/v1/$1"
+        }
+
+        access_token() {
+          metadata_value "instance/service-accounts/default/token" \
+          | python -c "import sys, json; print json.load(sys.stdin)['access_token']"
+        }
+
+        uptime_seconds() {
+          seconds="$(cat /proc/uptime | cut -d' ' -f1)"
+          echo ${seconds%%.*}  # delete floating point.
+        }
+
+        config_url() { metadata_value "instance/attributes/status-config-url"; }
+        instance_id() { metadata_value "instance/id"; }
+        variable_path() { metadata_value "instance/attributes/status-variable-path"; }
+        project_name() { metadata_value "project/project-id"; }
+        uptime_deadline() {
+          metadata_value "instance/attributes/status-uptime-deadline" \
+              || echo $DEFAULT_UPTIME_DEADLINE
+        }
+
+        config_name() {
+          python - $(config_url) <<EOF
+        import sys, urlparse
+        parsed = urlparse.urlparse(sys.argv[1])
+        print '/'.join(parsed.path.rstrip('/').split('/')[-4:])
+        EOF
+        }
+
+        variable_body() {
+          encoded_value=$(echo "$2" | base64)
+          printf '{"name":"%s", "value":"%s"}\n' "$1" "$encoded_value"
+        }
+
+        post_result() {
+          var_subpath=$1
+          var_value=$2
+          var_path="$(config_name)/variables/$var_subpath/$(instance_id)"
+
+          curl --retry 5 -sH "Authorization: Bearer $(access_token)" \
+              -H "Content-Type: application/json" \
+              -X POST -d "$(variable_body "$var_path" "$var_value")" \
+              "$(config_url)/variables"
+        }
+
+        post_success() {
+          post_result "$(variable_path)/success" "${1:-Success}"
+        }
+
+        post_failure() {
+          post_result "$(variable_path)/failure" "${1:-Failure}"
+        }
+
+        # The contents of initScript are contained within this function.
+        custom_init() (
+          return 0
+        )
+
+        # The contents of checkScript are contained within this function.
+        check_success() (
+          failed=$(/etc/init.d/bitnami status \
+              | grep "not running" | cut -d" " -f1 | tr "\n" " ")
+          if [ ! -z "$failed" ]; then
+            echo "Processes failed to start: $failed"
+            exit 1
+          fi
+        )
+
+        check_success_with_retries() {
+          deadline="$(uptime_deadline)"
+          while [ "$(uptime_seconds)" -lt "$deadline" ]; do
+            message=$(check_success)
+            case $? in
+            0)
+              # Success.
+              return 0
+              ;;
+            1)
+              # Not ready; continue loop
+              ;;
+            *)
+              # Failure; abort.
+              echo $message
+              return 1
+              ;;
+            esac
+
+            sleep 5
+          done
+
+          # The check was not successful within the required deadline.
+          echo "status check timeout"
+          return 1
+        }
+
+        do_init() {
+          # Run the init script first. If no init script was specified, this
+          # is a no-op.
+          echo "software-status: initializing..."
+
+          set +e
+          message="$(custom_init)"
+          result=$?
+          set -e
+
+          if [ $result -ne 0 ]; then
+            echo "software-status: init failure"
+            post_failure "$message"
+            return 1
+          fi
+        }
+
+        do_check() {
+          # Poll for success.
+          echo "software-status: waiting for software to become ready..."
+          set +e
+          message="$(check_success_with_retries)"
+          result=$?
+          set -e
+
+          if [ $result -eq 0 ]; then
+            echo "software-status: success"
+            post_success
+          else
+            echo "software-status: failed with message: $message"
+            post_failure "$message"
+          fi
+        }
+
+        # Run the initialization script synchronously.
+        do_init || exit $?
+
+        # The actual software initialization might come after google's init.d
+        # script that executes our startup script. Thus, launch this script
+        # into the background so that it does not block init and eventually
+        # timeout while waiting for software to start.
+        do_check & disown
+      name: startup-script
+      value: |-
+        #!/bin/bash
+
+        set -e
+
+        DEFAULT_UPTIME_DEADLINE="300"  # 5 minutes
+
+        metadata_value() {
+          curl --retry 5 -sfH "Metadata-Flavor: Google" \
+               "http://metadata/computeMetadata/v1/$1"
+        }
+
+        access_token() {
+          metadata_value "instance/service-accounts/default/token" \
+          | python -c "import sys, json; print json.load(sys.stdin)['access_token']"
+        }
+
+        uptime_seconds() {
+          seconds="$(cat /proc/uptime | cut -d' ' -f1)"
+          echo ${seconds%%.*}  # delete floating point.
+        }
+
+        config_url() { metadata_value "instance/attributes/status-config-url"; }
+        instance_id() { metadata_value "instance/id"; }
+        variable_path() { metadata_value "instance/attributes/status-variable-path"; }
+        project_name() { metadata_value "project/project-id"; }
+        uptime_deadline() {
+          metadata_value "instance/attributes/status-uptime-deadline" \
+              || echo $DEFAULT_UPTIME_DEADLINE
+        }
+
+        config_name() {
+          python - $(config_url) <<EOF
+        import sys, urlparse
+        parsed = urlparse.urlparse(sys.argv[1])
+        print '/'.join(parsed.path.rstrip('/').split('/')[-4:])
+        EOF
+        }
+
+        variable_body() {
+          encoded_value=$(echo "$2" | base64)
+          printf '{"name":"%s", "value":"%s"}\n' "$1" "$encoded_value"
+        }
+
+        post_result() {
+          var_subpath=$1
+          var_value=$2
+          var_path="$(config_name)/variables/$var_subpath/$(instance_id)"
+
+          curl --retry 5 -sH "Authorization: Bearer $(access_token)" \
+              -H "Content-Type: application/json" \
+              -X POST -d "$(variable_body "$var_path" "$var_value")" \
+              "$(config_url)/variables"
+        }
+
+        post_success() {
+          post_result "$(variable_path)/success" "${1:-Success}"
+        }
+
+        post_failure() {
+          post_result "$(variable_path)/failure" "${1:-Failure}"
+        }
+
+        # The contents of initScript are contained within this function.
+        custom_init() (
+          return 0
+        )
+
+        # The contents of checkScript are contained within this function.
+        check_success() (
+          failed=$(/etc/init.d/bitnami status \
+              | grep "not running" | cut -d" " -f1 | tr "\n" " ")
+          if [ ! -z "$failed" ]; then
+            echo "Processes failed to start: $failed"
+            exit 1
+          fi
+        )
+
+        check_success_with_retries() {
+          deadline="$(uptime_deadline)"
+          while [ "$(uptime_seconds)" -lt "$deadline" ]; do
+            message=$(check_success)
+            case $? in
+            0)
+              # Success.
+              return 0
+              ;;
+            1)
+              # Not ready; continue loop
+              ;;
+            *)
+              # Failure; abort.
+              echo $message
+              return 1
+              ;;
+            esac
+
+            sleep 5
+          done
+
+          # The check was not successful within the required deadline.
+          echo "status check timeout"
+          return 1
+        }
+
+        do_init() {
+          # Run the init script first. If no init script was specified, this
+          # is a no-op.
+          echo "software-status: initializing..."
+
+          set +e
+          message="$(custom_init)"
+          result=$?
+          set -e
+
+          if [ $result -ne 0 ]; then
+            echo "software-status: init failure"
+            post_failure "$message"
+            return 1
+          fi
+        }
+
+        do_check() {
+          # Poll for success.
+          echo "software-status: waiting for software to become ready..."
+          set +e
+          message="$(check_success_with_retries)"
+          result=$?
+          set -e
+
+          if [ $result -eq 0 ]; then
+            echo "software-status: success"
+            post_success
+          else
+            echo "software-status: failed with message: $message"
+            post_failure "$message"
+          fi
+        }
+
+        # Run the initialization script synchronously.
+        do_init || exit $?
+
+        # The actual software initialization might come after google's init.d
+        # script that executes our startup script. Thus, launch this script
+        # into the background so that it does not block init and eventually
+        # timeout while waiting for software to start.
+        do_check & disown
+    type: software_status_script.py
+  - name: lampstack-1-tcp-80
+    type: compute.v1.firewall
+  - name: lampstack-1-tcp-443
+    type: compute.v1.firewall
+  type: lampstack.jinja

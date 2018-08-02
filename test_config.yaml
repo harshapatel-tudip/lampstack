@@ -1,0 +1,6 @@
+imports:
+- path: lampstack.jinja
+
+resources:
+- name: lampstack
+  type: lampstack.jinja

@@ -1,0 +1,234 @@
+description:
+  author:
+    title: Bitnami
+    descriptionHtml: Bitnami is the leading provider of packaged applications for any platform. The Bitnami application automation platform delivers and maintains a catalog of ready-to-run server applications and development environments in partnership with the world's leading cloud providers such as Amazon, Google, Microsoft, Oracle and more . That same application automation platform that drives over 1 million deployments per month is also available to Enterprise developers looking to streamline their software development processes. Based in San Francisco CA, and with offices around the world, Bitnami is proud to be a rapidly growing self-funded company. For more information, visit www.bitnami.com , or follow us on Twitter (@Bitnami) and Facebook.
+    shortDescription: The Bitnami Application Catalog contains a growing list of 140+ trusted, pre-packaged applications and development runtimes ready-to-run anywhere.  Choose from single VMs, multi-tier applications, container images, or Kubernetes Helm charts.
+    url: http://bitnami.com
+  descriptionHtml: "<p>Deploying and configuring an environment can be a difficult and time-consuming hurdle to clear before working on a new application. When installing and configuring multiple components and libraries, many of which can conflict with one another, it is easy to make mistakes. This is why a pre-configured LAMP environment is so helpful- everything just works out of the box.\r\n\r\nBeyond the core components of the stack, Bitnami's LAMP includes extras that make it more powerful out of the box. Popular PHP frameworks like Zend and Laravel are pre-installed, as well as a wide variety of add-ons for functionalities such as SSL, caching, firewall, and OAuth that are prerequisites for building modern web apps.</p> <p>Why use Bitnami Certified Apps?</p> <p>Bitnami certifies that our images are secure, up-to-date, and packaged using industry best practices.</p> <p>With Bitnami you can trust what's in the app you're launching. We monitor all components and libraries for vulnerabilities, outdated components, and application updates. When one is reported, we update and release every affected listing within a couple days at most.</p>"
+  logo: '@media/lampstack_store.png'
+  tagline: Infrastructure software from the leading publisher
+  title: LAMP Certified by Bitnami
+  url: https://bitnami.com/stack/lamp
+  version: 7.1.20-0
+  eulaUrl: https://bitnami.com/agreement
+  softwareGroups:
+  - type: SOFTWARE_GROUP_OS
+    software:
+    - title: Debian
+      version: '9'
+  - software:
+    - title: CakePHP
+      version: 3.6.8
+    - title: CodeIgniter
+      version: 3.1.9
+    - title: Ghostscript
+      version: '9.05'
+      licenseTitle: AGPL
+    - title: Git
+      version: 2.17.1
+    - title: Apache
+      version: 2.4.34
+    - title: ImageMagick
+      version: 6.9.8
+    - title: Laravel
+      version: 5.6.21
+    - title: MySQL
+      version: 5.7.22
+    - title: OpenSSL
+      version: 1.0.2o
+    - title: PHP
+      version: 7.1.20
+    - title: phpMyAdmin
+      version: 4.8.2
+    - title: Smarty
+      version: 3.1.32
+    - title: SQLite
+      version: 3.18.0
+    - title: Symfony
+      version: 4.1.2.2
+    - title: Varnish
+      version: 4.1.0
+    - title: Zend Framework
+      version: 3.0.3
+  documentations:
+  - title: Getting Started
+    url: https://docs.bitnami.com/google/infrastructure/lamp/
+    description: Get started with Bitnami LAMP Stack.
+    destinations:
+    - DESTINATION_POST_DEPLOY
+  - title: Access using SSH
+    url: https://docs.bitnami.com/google/faq/#how-to-connect-to-the-server-through-ssh
+    description: Configure SSH keys to access the application as the user "bitnami".
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  - title: Using SFTP
+    url: https://docs.bitnami.com/google/faq/#how-to-upload-files-to-the-server-with-sftp
+    description: Use this guide to upload files using SFTP.
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  - title: MySQL access credentials
+    url: https://docs.bitnami.com/google/components/mysql/#how-to-connect-to-the-mysql-database
+    description: Use username "root" and the temporary password to access MySQL.
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  - title: Change your MySQL root password
+    url: https://docs.bitnami.com/google/components/mysql/#how-to-change-the-mysql-root-password
+    description: Change your temporary MySQL root password by following these instructions
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  - title: Accessing phpMyAdmin
+    url: https://docs.bitnami.com/google/components/phpmyadmin/#how-to-access-phpmyadmin
+    description: Access phpMyAdmin via an SSH tunnel using this guide.
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  - title: Installation directory structure
+    url: https://docs.bitnami.com/google/faq/#what-is-the-directory-structure
+    description: Learn how application files, libraries and configuration files are organized.
+    destinations:
+    - DESTINATION_SOLUTION_DETAILS
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  support:
+  - title: Support
+    descriptionHtml: Bitnami provides technical support for installation and setup issues through <a href="https://bitnami.com/support/google">our support center</a>.
+    url: https://bitnami.com/support/google
+  icon: '@media/lampstack_small.png'
+
+input:
+  properties:
+    - name: zone
+      title: Zone
+    - name: machineType
+      title: Machine type
+    - name: bootDiskType
+      title: Boot disk type
+      section: BOOT_DISK
+    - name: bootDiskSizeGb
+      title: Boot disk size in GB
+      section: BOOT_DISK
+    - name: network
+      title: Network name
+      section: NETWORKING
+    - name: subnetwork
+      title: Subnetwork name
+      section: NETWORKING
+    - name: externalIP
+      title: External IP
+      tooltip: 'An external IP address associated with this instance. Selecting "None" will result in the instance having no external internet access. <a href="https://cloud.google.com/compute/docs/configure-instance-ip-addresses">Learn more</a>'
+      section: NETWORKING
+      level: 1
+    - name: tcp80SourceRanges
+      title: Source IP ranges for HTTP traffic
+      tooltip: 'Traffic is only allowed from sources within these IP address ranges. Use CIDR notation when entering ranges. <a href="https://cloud.google.com/compute/docs/networking#firewalls">Learn more</a>'
+      placeholder: '0.0.0.0/0, 192.169.0.2/24'
+      section: NETWORKING
+      level: 1
+    - name: tcp443SourceRanges
+      title: Source IP ranges for HTTPS traffic
+      tooltip: 'Traffic is only allowed from sources within these IP address ranges. Use CIDR notation when entering ranges. <a href="https://cloud.google.com/compute/docs/networking#firewalls">Learn more</a>'
+      placeholder: '0.0.0.0/0, 192.169.0.2/24'
+      section: NETWORKING
+      level: 1
+    - name: enableTcp80
+      title: Allow HTTP traffic
+      section: NETWORKING
+      boolean_group: FIREWALL
+    - name: enableTcp443
+      title: Allow HTTPS traffic
+      section: NETWORKING
+      boolean_group: FIREWALL
+  sections:
+    - name: BOOT_DISK
+      title: Boot Disk
+      tooltip: Each instance requires a disk to boot from.
+    - name: NETWORKING
+      title: Networking
+  boolean_groups:
+    - name: FIREWALL
+      title: Firewall
+      tooltip: 'By default all incoming traffic from outside a network is blocked. Select the type of network traffic you want to allow. <a href="https://cloud.google.com/compute/docs/networking#firewalls">Learn more</a>'
+      subtext: Add tags and firewall rules to allow specific network traffic from the Internet
+
+runtime:
+  deployingMessage: Deployment can take several minutes to complete.
+  applicationTable:
+    rows:
+      - label: Site address
+        value: <a href="http://{{ externalIp(outputs().vmSelfLink) }}/">http://{{ externalIp(outputs().vmSelfLink) }}/</a>
+        showIf: '{{ properties().externalIP != "None" }}'
+      - label: Site address (internal IP)
+        value: http://{{ outputs().vmInternalIP }}/
+        showIf: '{{ properties().externalIP == "None" }}'
+      - label: Admin password (Temporary)
+        value: '{{ outputs().password0 }}'
+      - label: Instance
+        value: '<a href="{{ consoleUrl(outputs().vmSelfLink) }}">{{ outputs().vmName }}</a>'
+      - label: Instance zone
+        value: '{{ properties().zone }}'
+      - label: Instance machine type
+        value: '{{ properties().machineType }}'
+  primaryButton:
+    label: Visit the site
+    type: TYPE_URL
+    action: http://{{ externalIp(outputs().vmSelfLink) }}/
+  secondaryButton:
+    label: SSH
+    type: TYPE_GCE_VM_SSH
+    action: '{{ outputs().vmSelfLink }}'
+  suggestedActions:
+    - heading: No external IP configured
+      description: 'The VM instance has been configured with no external IP or internet access. Connecting to it directly may not be possible. Consider using a <a href="https://cloud.google.com/compute/docs/instances/connecting-advanced#bastion_host">bastion host</a> to access this VM.'
+      showIf: '{{ properties().externalIP == "None" }}'
+    - heading: Open HTTP traffic
+      description: >-
+        This firewall rule is not enabled.
+        To allow specific network traffic from the Internet,
+        create a firewall rule to open HTTP traffic
+        for target tag "{{ outputs().deployment }}-tcp-80".
+        <a href="https://cloud.google.com/compute/docs/networking">Learn more</a><br>
+        If you are using Google Cloud SDK, type the following command in
+        the terminal:
+      snippet: >-
+        gcloud --project={{ outputs().project }} compute firewall-rules
+        create "{{ outputs().deployment }}-tcp-80"
+        --network {{ properties().network }}
+        --allow tcp:80
+        --target-tags "{{ outputs().deployment }}-tcp-80"
+      showIf: '{{ !properties().enableTcp80 }}'
+    - heading: Open HTTPS traffic
+      description: >-
+        This firewall rule is not enabled.
+        To allow specific network traffic from the Internet,
+        create a firewall rule to open HTTPS traffic
+        for target tag "{{ outputs().deployment }}-tcp-443".
+        <a href="https://cloud.google.com/compute/docs/networking">Learn more</a><br>
+        If you are using Google Cloud SDK, type the following command in
+        the terminal:
+      snippet: >-
+        gcloud --project={{ outputs().project }} compute firewall-rules
+        create "{{ outputs().deployment }}-tcp-443"
+        --network {{ properties().network }}
+        --allow tcp:443
+        --target-tags "{{ outputs().deployment }}-tcp-443"
+      showIf: '{{ !properties().enableTcp443 }}'
+    - heading: Change the temporary password
+      description: For additional security, it is recommended that you change the password.
+    - heading: Assign a static external IP address to your VM instance
+      description: 'An ephemeral external IP address has been assigned to the VM instance. If you require a static external IP address, you may promote the address to static. <a href="https://cloud.google.com/compute/docs/instances-and-network#promote_ephemeral_ip">Learn more</a>'
+      showIf: '{{ properties().externalIP == "Ephemeral" }}'
+
+annotations:
+  autogenSpecType: 'SINGLE_VM'
+  vmImage0: https://www.googleapis.com/compute/v1/projects/bitnami-launchpad/global/images/bitnami-lampstack-7-1-20-0-linux-debian-9-x86-64
+
+metadata_version: v1

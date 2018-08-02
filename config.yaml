@@ -1,0 +1,26 @@
+{
+  "imports": [
+    {
+      "path": "lampstack.jinja"
+    }
+  ],
+  "resources": [
+    {
+      "name": "lampstack",
+      "type": "lampstack.jinja",
+      "properties": {
+        "zone": "us-central1-a",
+        "machineType": "f1-micro",
+        "bootDiskType": "pd-standard",
+        "bootDiskSizeGb": 10,
+        "network": "default",
+        "subnetwork": "default",
+        "externalIP": "Ephemeral",
+        "tcp80SourceRanges": "",
+        "tcp443SourceRanges": "",
+        "enableTcp80": true,
+        "enableTcp443": true
+      }
+    }
+  ]
+}

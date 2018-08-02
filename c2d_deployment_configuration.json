@@ -1,0 +1,7 @@
+{
+  "defaultDeploymentType": "SINGLE_VM",
+  "imageName": "bitnami-lampstack-7-1-20-0-linux-debian-9-x86-64",
+  "projectId": "bitnami-launchpad",
+  "templateName": "nonexistent_template",
+  "useSolutionPackage": true
+}
